@@ -1,23 +1,30 @@
 from config import SYMBOLS, MIN_SPREAD, BUY_FEE, SELL_FEE, MIN_NET_PROFIT
-from mexc_api import get_price
+from mexc_api import get_orderbook
 
 
 def check_market(symbol):
 
     try:
 
-        price = get_price(symbol)
+        market = get_orderbook(symbol)
 
-        # simulasi harga bid dan ask
-        bid = price * 0.9995
-        ask = price * 1.0005
-
-
-        # hitung spread kotor
-        spread = ((ask - bid) / bid) * 100
+        if not market:
+            return None
 
 
-        # hitung total fee beli + jual
+        bid = market["bid"]
+        ask = market["ask"]
+
+
+        # spread nyata dari order book
+        spread = ((bid - ask) / ask) * 100
+
+
+        # ubah jadi nilai positif
+        spread = abs(spread)
+
+
+        # total fee beli + jual
         total_fee = BUY_FEE + SELL_FEE
 
 
@@ -27,8 +34,10 @@ def check_market(symbol):
 
         print(
             symbol,
-            "| Harga:",
-            price,
+            "| Bid:",
+            bid,
+            "| Ask:",
+            ask,
             "| Spread:",
             round(spread, 4),
             "%",
@@ -49,7 +58,11 @@ def check_market(symbol):
 
     except Exception as e:
 
-        print(symbol, "ERROR:", e)
+        print(
+            symbol,
+            "ERROR:",
+            e
+        )
 
         return None
 
