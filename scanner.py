@@ -1,4 +1,9 @@
-from mexc_api import get_all_bid_ask
+from mexc_api import get_all_bid_ask, get_all_volume
+
+
+# minimal volume transaksi 24 jam (USDT)
+MIN_VOLUME = 100000
+
 
 
 def calculate_spread(bid, ask):
@@ -14,6 +19,8 @@ def scan_spread():
 
     markets = get_all_bid_ask()
 
+    volumes = get_all_volume()
+
     results = []
 
 
@@ -23,6 +30,18 @@ def scan_spread():
     for symbol, data in markets.items():
 
         try:
+
+            if symbol not in volumes:
+                continue
+
+
+            volume = volumes[symbol]
+
+
+            # buang pair terlalu sepi
+            if volume < MIN_VOLUME:
+                continue
+
 
             bid = data["bid"]
             ask = data["ask"]
@@ -35,10 +54,13 @@ def scan_spread():
 
 
             results.append({
+
                 "symbol": symbol,
                 "bid": bid,
                 "ask": ask,
-                "spread": spread
+                "spread": spread,
+                "volume": volume
+
             })
 
 
