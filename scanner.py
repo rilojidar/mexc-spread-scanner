@@ -1,8 +1,8 @@
-from mexc_api import get_all_bid_ask, get_all_volume
+from mexc_api import get_all_bid_ask, get_all_volume, get_order_depth
 
 
-# minimal volume transaksi 24 jam (USDT)
 MIN_VOLUME = 100000
+MIN_DEPTH = 1000
 
 
 
@@ -38,13 +38,27 @@ def scan_spread():
             volume = volumes[symbol]
 
 
-            # buang pair terlalu sepi
             if volume < MIN_VOLUME:
                 continue
 
 
             bid = data["bid"]
             ask = data["ask"]
+
+
+            depth = get_order_depth(symbol)
+
+
+            bid_depth = depth["bid_depth"]
+            ask_depth = depth["ask_depth"]
+
+
+            if (
+                bid_depth < MIN_DEPTH
+                or
+                ask_depth < MIN_DEPTH
+            ):
+                continue
 
 
             spread = calculate_spread(
@@ -59,7 +73,9 @@ def scan_spread():
                 "bid": bid,
                 "ask": ask,
                 "spread": spread,
-                "volume": volume
+                "volume": volume,
+                "bid_depth": bid_depth,
+                "ask_depth": ask_depth
 
             })
 
