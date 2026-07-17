@@ -1,4 +1,4 @@
-from mexc_api import get_all_symbols, get_bid_ask
+from mexc_api import get_all_bid_ask
 
 
 def calculate_spread(bid, ask):
@@ -6,27 +6,23 @@ def calculate_spread(bid, ask):
     if bid <= 0:
         return 0
 
-    spread = ((ask - bid) / bid) * 100
-
-    return spread
+    return ((ask - bid) / bid) * 100
 
 
 
 def scan_spread():
 
-    symbols = get_all_symbols()
+    markets = get_all_bid_ask()
 
     results = []
 
 
-    print("Jumlah pair:", len(symbols))
+    print("Jumlah pair:", len(markets))
 
 
-    for symbol in symbols:
+    for symbol, data in markets.items():
 
         try:
-
-            data = get_bid_ask(symbol)
 
             bid = data["bid"]
             ask = data["ask"]
@@ -46,7 +42,7 @@ def scan_spread():
             })
 
 
-        except Exception:
+        except:
 
             continue
 
