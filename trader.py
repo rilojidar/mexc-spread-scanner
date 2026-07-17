@@ -1,59 +1,28 @@
-from config import TEST_MODE, TRADE_AMOUNT
+from config import TRADE_AMOUNT
 
 
-def open_position(symbol, side, price):
+def show_signal(symbol, side, price, take_profit, stop_loss):
 
-    print("======================")
-    print("OPEN POSITION")
-    print("Symbol :", symbol)
-    print("Side   :", side)
-    print("Price  :", price)
-    print("Amount :", TRADE_AMOUNT)
-    print("======================")
+    print("==========================")
+    print("   SINYAL TRADING MEXC")
+    print("==========================")
 
+    print("PAIR        :", symbol)
+    print("ARAH        :", side)
+    print("ENTRY       :", price)
+    print("MODAL       :", TRADE_AMOUNT)
+    print("TAKE PROFIT :", take_profit)
+    print("STOP LOSS   :", stop_loss)
 
-    if TEST_MODE:
-        print("MODE TEST - ORDER TIDAK DIKIRIM")
-        return {
-            "status": "SIMULATION",
-            "symbol": symbol,
-            "side": side,
-            "price": price
-        }
-
-
-    # Nanti bagian API order MEXC masuk di sini
-
-    return {
-        "status": "REAL ORDER",
-        "symbol": symbol,
-        "side": side,
-        "price": price
-    }
+    print("==========================")
+    print("MENUNGGU KEPUTUSAN MANUAL")
+    print("==========================")
 
 
 
-def close_position(symbol):
+def close_signal(symbol):
 
-    print("======================")
-    print("CLOSE POSITION")
-    print("Symbol :", symbol)
-    print("======================")
-
-
-    return {
-        "status": "CLOSED",
-        "symbol": symbol
-    }
-
-
-
-if __name__ == "__main__":
-
-    test = open_position(
-        "BTCUSDT",
-        "LONG",
-        60000
-    )
-
-    print(test)
+    print("==========================")
+    print("TUTUP POSISI MANUAL")
+    print("PAIR :", symbol)
+    print("==========================")
