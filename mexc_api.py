@@ -1,26 +1,63 @@
 import requests
-import time
 import hmac
 import hashlib
+
 from config import API_KEY, SECRET_KEY
 
 
 BASE_URL = "https://api.mexc.com"
 
 
+def get_orderbook(symbol):
+
+    try:
+
+        url = BASE_URL + "/api/v3/ticker/bookTicker"
+
+        params = {
+            "symbol": symbol
+        }
+
+        response = requests.get(
+            url,
+            params=params,
+            timeout=10
+        )
+
+        data = response.json()
+
+
+        bid = float(data["bidPrice"])
+        ask = float(data["askPrice"])
+
+
+        return {
+            "symbol": symbol,
+            "bid": bid,
+            "ask": ask
+        }
+
+
+    except Exception as e:
+
+        print(
+            "ORDERBOOK ERROR",
+            symbol,
+            e
+        )
+
+        return None
+
+
+
 def get_price(symbol):
 
-    url = BASE_URL + "/api/v3/ticker/price"
+    data = get_orderbook(symbol)
 
-    params = {
-        "symbol": symbol
-    }
+    if data:
+        return data["ask"]
 
-    response = requests.get(url, params=params)
-
-    data = response.json()
-
-    return float(data["price"])
+    return None
 
 
 
@@ -43,11 +80,3 @@ def server_time():
     response = requests.get(url)
 
     return response.json()
-
-
-
-if __name__ == "__main__":
-
-    print("MEXC API CONNECTED")
-
-    print(server_time())
