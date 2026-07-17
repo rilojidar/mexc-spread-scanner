@@ -74,3 +74,37 @@ def get_all_bid_ask():
 
 
     return markets
+def get_all_volume():
+
+    url = BASE_URL + "/api/v3/ticker/24hr"
+
+    response = requests.get(
+        url,
+        timeout=10
+    )
+
+    data = response.json()
+
+
+    volumes = {}
+
+
+    for item in data:
+
+        symbol = item["symbol"]
+
+
+        if symbol.endswith("USDT"):
+
+            try:
+
+                volumes[symbol] = float(
+                    item["quoteVolume"]
+                )
+
+            except:
+
+                continue
+
+
+    return volumes
