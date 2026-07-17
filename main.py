@@ -2,22 +2,20 @@ import time
 
 from scanner import scan_market
 from strategy import decide_trade
-from trader import open_position
-from risk import calculate_position
+from trader import show_signal
 
 
 def run_bot():
 
-    print("======================")
-    print("MEXC TWO WAY BOT START")
-    print("======================")
+    print("==============================")
+    print(" MEXC MANUAL SIGNAL BOT START ")
+    print("==============================")
 
 
     while True:
 
         try:
 
-            # scan peluang
             signals = scan_market()
 
 
@@ -25,32 +23,22 @@ def run_bot():
 
                 for signal in signals:
 
-                    print("Signal ditemukan:")
-                    print(signal)
-
-
-                    # tentukan posisi
                     decision = decide_trade(signal)
 
 
                     if decision:
 
-                        amount = calculate_position()
-
-
-                        order = open_position(
+                        show_signal(
                             decision["symbol"],
                             decision["action"],
-                            decision["entry"]
+                            decision["entry"],
+                            decision["take_profit"],
+                            decision["stop_loss"]
                         )
-
-
-                        print(order)
-
 
             else:
 
-                print("Belum ada peluang...")
+                print("Belum ada sinyal...")
 
 
             time.sleep(10)
