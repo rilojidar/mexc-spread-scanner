@@ -2,7 +2,7 @@ from mexc_api import get_all_bid_ask, get_all_volume, get_order_depth
 
 
 MIN_VOLUME = 100000
-MIN_DEPTH = 1000
+CHECK_DEPTH = 20
 
 
 
@@ -27,15 +27,13 @@ def scan_spread():
     print("Jumlah pair:", len(markets))
 
 
+    # tahap 1: scan cepat semua pair
+
     for symbol, data in markets.items():
 
         try:
 
-            if symbol not in volumes:
-                continue
-
-
-            volume = volumes[symbol]
+            volume = volumes.get(symbol, 0)
 
 
             if volume < MIN_VOLUME:
@@ -44,21 +42,6 @@ def scan_spread():
 
             bid = data["bid"]
             ask = data["ask"]
-
-
-            depth = get_order_depth(symbol)
-
-
-            bid_depth = depth["bid_depth"]
-            ask_depth = depth["ask_depth"]
-
-
-            if (
-                bid_depth < MIN_DEPTH
-                or
-                ask_depth < MIN_DEPTH
-            ):
-                continue
 
 
             spread = calculate_spread(
@@ -73,9 +56,7 @@ def scan_spread():
                 "bid": bid,
                 "ask": ask,
                 "spread": spread,
-                "volume": volume,
-                "bid_depth": bid_depth,
-                "ask_depth": ask_depth
+                "volume": volume
 
             })
 
@@ -86,10 +67,40 @@ def scan_spread():
 
 
 
+    # urutkan spread terbesar
+
     results.sort(
         key=lambda x: x["spread"],
         reverse=True
     )
 
 
-    return results
+
+    # tahap 2: cek depth hanya kandidat teratas
+
+    final_results = []
+
+
+    for item in results[:CHECK_DEPTH]:
+
+        try:
+
+            depth = get_order_depth(
+                item["symbol"]
+            )
+
+
+            item["bid_depth"] = depth["bid_depth"]
+            item["ask_depth"] = depth["ask_depth"]
+
+
+            final_results.append(item)
+
+
+        except:
+
+            continue
+
+
+
+    return final_results
