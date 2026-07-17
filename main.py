@@ -1,14 +1,12 @@
 import time
 
-from scanner import scan_market
-from strategy import decide_trade
-from trader import show_signal
+from scanner import scan_spread
 
 
-def run_bot():
+def run():
 
     print("==============================")
-    print(" MEXC MANUAL SIGNAL BOT START ")
+    print(" MEXC SPREAD SCANNER START ")
     print("==============================")
 
 
@@ -16,42 +14,42 @@ def run_bot():
 
         try:
 
-            signals = scan_market()
+            results = scan_spread()
 
 
-            if signals:
-
-                for signal in signals:
-
-                    decision = decide_trade(signal)
+            print("\nTOP SPREAD TERBESAR")
+            print("==============================")
 
 
-                    if decision:
+            for item in results[:20]:
 
-                        show_signal(
-                            decision["symbol"],
-                            decision["action"],
-                            decision["entry"],
-                            decision["take_profit"],
-                            decision["stop_loss"]
-                        )
+                print(
+                    item["symbol"],
+                    "| Bid:",
+                    item["bid"],
+                    "| Ask:",
+                    item["ask"],
+                    "| Spread:",
+                    round(item["spread"], 4),
+                    "%"
+                )
 
-            else:
 
-                print("Belum ada sinyal...")
+            print("==============================")
+            print("Refresh 30 detik...\n")
 
 
-            time.sleep(10)
+            time.sleep(30)
 
 
         except Exception as e:
 
             print("ERROR:", e)
 
-            time.sleep(10)
+            time.sleep(30)
 
 
 
 if __name__ == "__main__":
 
-    run_bot()
+    run()
