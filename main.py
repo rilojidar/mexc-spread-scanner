@@ -31,7 +31,10 @@ def run():
                     item["ask"],
                     "| Spread:",
                     round(item["spread"], 4),
-                    "%"
+                    "%",
+                    "| Volume:",
+                    round(item["volume"], 0),
+                    "USDT"
                 )
 
 
@@ -51,5 +54,4 @@ def run():
 
 
 if __name__ == "__main__":
-
     run()
