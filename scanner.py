@@ -1,5 +1,4 @@
-import time
-from config import SYMBOLS, MIN_SPREAD
+from config import SYMBOLS, MIN_SPREAD, BUY_FEE, SELL_FEE, MIN_NET_PROFIT
 from mexc_api import get_price
 
 
@@ -9,11 +8,21 @@ def check_market(symbol):
 
         price = get_price(symbol)
 
-        # simulasi bid dan ask dari harga pasar
+        # simulasi harga bid dan ask
         bid = price * 0.9995
         ask = price * 1.0005
 
+
+        # hitung spread kotor
         spread = ((ask - bid) / bid) * 100
+
+
+        # hitung total fee beli + jual
+        total_fee = BUY_FEE + SELL_FEE
+
+
+        # perkiraan profit bersih
+        net_profit = spread - total_fee
 
 
         print(
@@ -22,6 +31,9 @@ def check_market(symbol):
             price,
             "| Spread:",
             round(spread, 4),
+            "%",
+            "| Net:",
+            round(net_profit, 4),
             "%"
         )
 
@@ -30,7 +42,8 @@ def check_market(symbol):
             "symbol": symbol,
             "bid": bid,
             "ask": ask,
-            "spread": spread
+            "spread": spread,
+            "net_profit": net_profit
         }
 
 
@@ -54,7 +67,11 @@ def scan_market():
 
         if data:
 
-            if data["spread"] >= MIN_SPREAD:
+            if (
+                data["spread"] >= MIN_SPREAD
+                and
+                data["net_profit"] >= MIN_NET_PROFIT
+            ):
 
                 results.append(data)
 
