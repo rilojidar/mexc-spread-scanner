@@ -4,11 +4,15 @@ import requests
 BASE_URL = "https://api.mexc.com"
 
 
+
 def get_all_symbols():
 
     url = BASE_URL + "/api/v3/exchangeInfo"
 
-    response = requests.get(url, timeout=10)
+    response = requests.get(
+        url,
+        timeout=10
+    )
 
     data = response.json()
 
@@ -28,24 +32,45 @@ def get_all_symbols():
 
 
 
-def get_bid_ask(symbol):
+def get_all_bid_ask():
+
+    """
+    Mengambil semua bid/ask sekaligus
+    """
 
     url = BASE_URL + "/api/v3/ticker/bookTicker"
 
-    params = {
-        "symbol": symbol
-    }
 
     response = requests.get(
         url,
-        params=params,
         timeout=10
     )
 
+
     data = response.json()
 
-    return {
-        "symbol": symbol,
-        "bid": float(data["bidPrice"]),
-        "ask": float(data["askPrice"])
-    }
+
+    markets = {}
+
+
+    for item in data:
+
+        symbol = item["symbol"]
+
+
+        if symbol.endswith("USDT"):
+
+            try:
+
+                markets[symbol] = {
+                    "bid": float(item["bidPrice"]),
+                    "ask": float(item["askPrice"])
+                }
+
+
+            except:
+
+                continue
+
+
+    return markets
