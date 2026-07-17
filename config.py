@@ -30,3 +30,9 @@ SYMBOLS = [
     "ETHUSDT",
     "SOLUSDT"
 ]
+# Estimasi fee spot MEXC
+BUY_FEE = 0.1
+SELL_FEE = 0.1
+
+# Minimal keuntungan bersih setelah fee
+MIN_NET_PROFIT = 0.1
