@@ -3,17 +3,28 @@ from config import SYMBOLS, MIN_SPREAD
 from mexc_api import get_price
 
 
-def check_spread(symbol):
+def check_market(symbol):
 
     try:
 
         price = get_price(symbol)
 
-        # simulasi bid dan ask sederhana
-        bid = price * 0.999
-        ask = price * 1.001
+        # simulasi bid dan ask dari harga pasar
+        bid = price * 0.9995
+        ask = price * 1.0005
 
         spread = ((ask - bid) / bid) * 100
+
+
+        print(
+            symbol,
+            "| Harga:",
+            price,
+            "| Spread:",
+            round(spread, 4),
+            "%"
+        )
+
 
         return {
             "symbol": symbol,
@@ -22,12 +33,12 @@ def check_spread(symbol):
             "spread": spread
         }
 
+
     except Exception as e:
 
-        return {
-            "symbol": symbol,
-            "error": str(e)
-        }
+        print(symbol, "ERROR:", e)
+
+        return None
 
 
 
@@ -35,33 +46,17 @@ def scan_market():
 
     results = []
 
+
     for symbol in SYMBOLS:
 
-        data = check_spread(symbol)
+        data = check_market(symbol)
 
-        if "spread" in data:
+
+        if data:
 
             if data["spread"] >= MIN_SPREAD:
+
                 results.append(data)
 
+
     return results
-
-
-
-if __name__ == "__main__":
-
-    print("START SCANNER")
-
-    while True:
-
-        opportunities = scan_market()
-
-        for item in opportunities:
-            print(
-                item["symbol"],
-                "Spread:",
-                round(item["spread"],4),
-                "%"
-            )
-
-        time.sleep(10)
