@@ -9,22 +9,19 @@
 body{
     background:#111827;
     color:white;
-    font-family:Arial;
+    font-family:Arial,sans-serif;
     margin:0;
     padding:20px;
 }
-
 h1{
     color:#00ff99;
 }
-
 .card{
     background:#1f2937;
     padding:15px;
     border-radius:10px;
     margin-top:20px;
 }
-
 button{
     width:100%;
     padding:15px;
@@ -34,18 +31,17 @@ button{
     border-radius:8px;
     font-size:18px;
 }
-
 table{
     width:100%;
     margin-top:20px;
+    border-collapse:collapse;
 }
-
 th,td{
     padding:10px;
     text-align:center;
+    border-bottom:1px solid #444;
 }
 </style>
-
 </head>
 
 <body>
@@ -53,18 +49,36 @@ th,td{
 <h1>MEXC Spread Scanner PRO</h1>
 
 <div class="card">
-
 <h3>Status</h3>
-
 <p>✅ Dashboard berhasil dibuat</p>
-
 <p>Versi 1.0</p>
 
-<button onclick="alert('Scanner akan dibuat pada langkah berikutnya')">
-Start Scanner
-</button>
+<button onclick="scan()">Scan Spread</button>
 
+<table>
+<tr>
+<th>Coin</th>
+<th>Spread</th>
+</tr>
+
+<tr>
+<td>BTC/USDT</td>
+<td>0.18%</td>
+</tr>
+
+<tr>
+<td>ETH/USDT</td>
+<td>0.25%</td>
+</tr>
+
+</table>
 </div>
+
+<script>
+function scan(){
+    alert("Fitur scan akan ditambahkan pada langkah berikutnya.");
+}
+</script>
 
 </body>
 </html>
