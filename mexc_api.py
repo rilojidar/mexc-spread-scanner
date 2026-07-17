@@ -1,82 +1,51 @@
 import requests
-import hmac
-import hashlib
-
-from config import API_KEY, SECRET_KEY
 
 
 BASE_URL = "https://api.mexc.com"
 
 
-def get_orderbook(symbol):
+def get_all_symbols():
 
-    try:
+    url = BASE_URL + "/api/v3/exchangeInfo"
 
-        url = BASE_URL + "/api/v3/ticker/bookTicker"
+    response = requests.get(url, timeout=10)
 
-        params = {
-            "symbol": symbol
-        }
+    data = response.json()
 
-        response = requests.get(
-            url,
-            params=params,
-            timeout=10
-        )
+    symbols = []
 
-        data = response.json()
+    for item in data["symbols"]:
 
+        symbol = item["symbol"]
 
-        bid = float(data["bidPrice"])
-        ask = float(data["askPrice"])
+        if (
+            symbol.endswith("USDT")
+            and item["status"] == "1"
+        ):
+            symbols.append(symbol)
 
-
-        return {
-            "symbol": symbol,
-            "bid": bid,
-            "ask": ask
-        }
-
-
-    except Exception as e:
-
-        print(
-            "ORDERBOOK ERROR",
-            symbol,
-            e
-        )
-
-        return None
+    return symbols
 
 
 
-def get_price(symbol):
+def get_bid_ask(symbol):
 
-    data = get_orderbook(symbol)
+    url = BASE_URL + "/api/v3/ticker/bookTicker"
 
-    if data:
-        return data["ask"]
+    params = {
+        "symbol": symbol
+    }
 
-    return None
+    response = requests.get(
+        url,
+        params=params,
+        timeout=10
+    )
 
+    data = response.json()
 
-
-def create_signature(query_string):
-
-    signature = hmac.new(
-        SECRET_KEY.encode(),
-        query_string.encode(),
-        hashlib.sha256
-    ).hexdigest()
-
-    return signature
-
-
-
-def server_time():
-
-    url = BASE_URL + "/api/v3/time"
-
-    response = requests.get(url)
-
-    return response.json()
+    return {
+        "symbol": symbol,
+        "bid": float(data["bidPrice"]),
+        "ask": float(data["askPrice"])
+    }
