@@ -1,92 +1,61 @@
-from config import SYMBOLS, MIN_SPREAD, BUY_FEE, SELL_FEE, MIN_NET_PROFIT
-from mexc_api import get_orderbook
+from mexc_api import get_all_symbols, get_bid_ask
 
 
-def check_market(symbol):
+def calculate_spread(bid, ask):
 
-    try:
+    if bid <= 0:
+        return 0
 
-        market = get_orderbook(symbol)
+    spread = ((ask - bid) / bid) * 100
 
-        if not market:
-            return None
-
-
-        bid = market["bid"]
-        ask = market["ask"]
-
-
-        # spread nyata dari order book
-        spread = ((bid - ask) / ask) * 100
-
-
-        # ubah jadi nilai positif
-        spread = abs(spread)
-
-
-        # total fee beli + jual
-        total_fee = BUY_FEE + SELL_FEE
-
-
-        # perkiraan profit bersih
-        net_profit = spread - total_fee
-
-
-        print(
-            symbol,
-            "| Bid:",
-            bid,
-            "| Ask:",
-            ask,
-            "| Spread:",
-            round(spread, 4),
-            "%",
-            "| Net:",
-            round(net_profit, 4),
-            "%"
-        )
-
-
-        return {
-            "symbol": symbol,
-            "bid": bid,
-            "ask": ask,
-            "spread": spread,
-            "net_profit": net_profit
-        }
-
-
-    except Exception as e:
-
-        print(
-            symbol,
-            "ERROR:",
-            e
-        )
-
-        return None
+    return spread
 
 
 
-def scan_market():
+def scan_spread():
+
+    symbols = get_all_symbols()
 
     results = []
 
 
-    for symbol in SYMBOLS:
-
-        data = check_market(symbol)
+    print("Jumlah pair:", len(symbols))
 
 
-        if data:
+    for symbol in symbols:
 
-            if (
-                data["spread"] >= MIN_SPREAD
-                and
-                data["net_profit"] >= MIN_NET_PROFIT
-            ):
+        try:
 
-                results.append(data)
+            data = get_bid_ask(symbol)
+
+            bid = data["bid"]
+            ask = data["ask"]
+
+
+            spread = calculate_spread(
+                bid,
+                ask
+            )
+
+
+            results.append({
+                "symbol": symbol,
+                "bid": bid,
+                "ask": ask,
+                "spread": spread
+            })
+
+
+        except Exception:
+
+            continue
+
+
+
+    results.sort(
+        key=lambda x: x["spread"],
+        reverse=True
+    )
 
 
     return results
