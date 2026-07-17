@@ -108,3 +108,36 @@ def get_all_volume():
 
 
     return volumes
+def get_order_depth(symbol):
+
+    url = BASE_URL + "/api/v3/depth"
+
+    params = {
+        "symbol": symbol,
+        "limit": 5
+    }
+
+    response = requests.get(
+        url,
+        params=params,
+        timeout=10
+    )
+
+    data = response.json()
+
+
+    bid_price = float(data["bids"][0][0])
+    bid_amount = float(data["bids"][0][1])
+
+    ask_price = float(data["asks"][0][0])
+    ask_amount = float(data["asks"][0][1])
+
+
+    bid_value = bid_price * bid_amount
+    ask_value = ask_price * ask_amount
+
+
+    return {
+        "bid_depth": bid_value,
+        "ask_depth": ask_value
+    }
